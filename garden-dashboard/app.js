@@ -4,8 +4,8 @@
 // ════════════════════════════════════════════════════
 
 // ── USER CONFIG (filled via modal or localStorage) ──
-let SUPABASE_URL   = localStorage.getItem('gn_url')   || '';
-let SUPABASE_KEY   = localStorage.getItem('gn_key')   || '';
+let SUPABASE_URL   = localStorage.getItem('gn_url')   || 'https://lhyxuuomjusjmkycuwuh.supabase.co';
+let SUPABASE_KEY   = localStorage.getItem('gn_key')   || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoeXh1dW9tanVzam1reWN1d3VoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEwODc0NjIsImV4cCI6MjA1NjY2MzQ2Mn0.d_Ax_9uf6_yrx6lpwFzptpyL3AfB_VPo-sXEgavje54';
 let SUPABASE_TABLE = localStorage.getItem('gn_table') || 'garden_data';
 const SOIL_THRESHOLD = 30.0;
 

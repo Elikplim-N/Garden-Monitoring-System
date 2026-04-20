@@ -9,9 +9,9 @@ const char* ssid     = "YOUR_WIFI_SSID";
 const char* password = "YOUR_WIFI_PASSWORD";
 
 // Supabase details
-const char* supabase_url = "https://your-project.supabase.co/rest/v1/garden_data";
-const char* supabase_config_url = "https://your-project.supabase.co/rest/v1/garden_config?id=eq.1&select=pump_mode,manual_override,soil_threshold";
-const char* supabase_key = "YOUR_SUPABASE_ANON_KEY";
+const char* supabase_url = "https://lhyxuuomjusjmkycuwuh.supabase.co/rest/v1/garden_data";
+const char* supabase_config_url = "https://lhyxuuomjusjmkycuwuh.supabase.co/rest/v1/garden_config?id=eq.1&select=pump_mode,manual_override,soil_threshold";
+const char* supabase_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoeXh1dW9tanVzam1reWN1d3VoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEwODc0NjIsImV4cCI6MjA1NjY2MzQ2Mn0.d_Ax_9uf6_yrx6lpwFzptpyL3AfB_VPo-sXEgavje54";
 
 // ---------------- PIN DEFINITIONS (ESP32) ----------------
 #define LORA_SCK       18 // Hardware VSPI Clock
