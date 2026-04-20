@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GardenNode — Sensor Dashboard</title>
+  <meta name="description" content="Real-time garden monitoring dashboard — soil moisture, temperature, and pump control powered by LoRa + Supabase." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════ SIDEBAR ═══════════════════════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+        <path d="M12 6v6l4 2"/>
+      </svg>
+      <span>GardenNode</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" id="nav-dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="#" class="nav-item" id="nav-history">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Sensor History
+      </a>
+      <a href="#" class="nav-item" id="nav-alerts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Alerts
+        <span class="badge" id="alert-badge">0</span>
+      </a>
+      <a href="#" class="nav-item" id="nav-settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="connection-status">
+        <span class="status-dot" id="conn-dot"></span>
+        <span id="conn-label">Connecting…</span>
+      </div>
+      <div class="last-updated">Updated: <span id="last-updated-time">—</span></div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════ MAIN ═══════════════════════════════ -->
+  <main class="main">
+
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div>
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-sub">Live garden sensor telemetry</p>
+      </div>
+      <div class="topbar-right">
+        <div class="live-chip">
+          <span class="live-dot"></span>
+          LIVE
+        </div>
+        <button class="refresh-btn" id="refresh-btn" title="Refresh now">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.91"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ── Stat Cards ── -->
+    <section class="stats-grid">
+
+      <!-- Soil Moisture Gauge -->
+      <div class="card gauge-card">
+        <div class="card-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+          Soil Moisture
+        </div>
+        <div class="gauge-wrap">
+          <svg class="gauge-svg" viewBox="0 0 200 200">
+            <defs>
+              <linearGradient id="gauge-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%"   stop-color="#4ade80"/>
+                <stop offset="60%"  stop-color="#fbbf24"/>
+                <stop offset="100%" stop-color="#f87171"/>
+              </linearGradient>
+            </defs>
+            <!-- Track -->
+            <circle class="gauge-track" cx="100" cy="100" r="80" />
+            <!-- Value arc -->
+            <circle class="gauge-fill" id="gauge-fill" cx="100" cy="100" r="80"
+              stroke="url(#gauge-grad)"
+              stroke-dasharray="0 502"
+              transform="rotate(-225 100 100)" />
+            <!-- Center text -->
+            <text class="gauge-value" id="gauge-value" x="100" y="95" text-anchor="middle">—</text>
+            <text class="gauge-unit"  x="100" y="118" text-anchor="middle">%</text>
+            <text class="gauge-state" id="gauge-state" x="100" y="138" text-anchor="middle">—</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Temperature -->
+      <div class="card temp-card">
+        <div class="card-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+          Temperature
+        </div>
+        <div class="big-value" id="temp-value">—</div>
+        <div class="big-unit">°C</div>
+        <div class="temp-bar-wrap">
+          <div class="temp-bar-track">
+            <div class="temp-bar-fill" id="temp-bar"></div>
+          </div>
+          <span class="temp-range">0°C ——— 50°C</span>
+        </div>
+        <div class="card-sub" id="temp-status">Awaiting data…</div>
+      </div>
+
+      <!-- Pump Status -->
+      <div class="card pump-card" id="pump-card">
+        <div class="card-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Water Pump
+        </div>
+        <div class="pump-indicator" id="pump-indicator">
+          <div class="pump-ring"></div>
+          <span class="pump-status-text" id="pump-text">—</span>
+        </div>
+        <div class="card-sub" id="pump-sub">Relay status</div>
+
+        <!-- AUTO / MANUAL toggle -->
+        <div class="ctrl-row">
+          <span class="ctrl-label">Mode</span>
+          <div class="mode-toggle">
+            <button class="mode-btn active" id="mode-auto">AUTO</button>
+            <button class="mode-btn" id="mode-manual">MANUAL</button>
+          </div>
+        </div>
+
+        <!-- Manual force buttons (hidden in AUTO mode) -->
+        <div class="manual-controls" id="manual-controls">
+          <button class="pump-action-btn pump-action-on"  id="pump-force-on">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            Force ON
+          </button>
+          <button class="pump-action-btn pump-action-off" id="pump-force-off">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            Force OFF
+          </button>
+        </div>
+
+        <!-- Threshold stepper -->
+        <div class="ctrl-row thresh-row">
+          <span class="ctrl-label">Threshold</span>
+          <div class="thresh-ctrl">
+            <button class="thresh-btn" id="thresh-minus" aria-label="Decrease threshold">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <span class="thresh-val" id="thresh-val">30%</span>
+            <button class="thresh-btn" id="thresh-plus" aria-label="Increase threshold">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Packets Received -->
+      <div class="card packets-card">
+        <div class="card-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Packets Received
+        </div>
+        <div class="big-value" id="packet-count">0</div>
+        <div class="big-unit">total</div>
+        <div class="card-sub">This session</div>
+        <div class="mini-stats">
+          <div class="mini-stat">
+            <span class="mini-label">Last RSSI</span>
+            <span class="mono" id="rssi-val">— dBm</span>
+          </div>
+          <div class="mini-stat">
+            <span class="mini-label">Interval</span>
+            <span class="mono">10 s</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ── History Chart ── -->
+    <section class="card chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="card-label" style="margin-bottom:2px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            Sensor History
+          </div>
+          <span class="chart-sub">Last 50 readings</span>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item green">● Soil Moisture (%)</span>
+          <span class="legend-item amber">● Temperature (°C)</span>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="historyChart"></canvas>
+      </div>
+    </section>
+
+    <!-- ── Recent Readings Table ── -->
+    <section class="card table-card">
+      <div class="card-label" style="margin-bottom:16px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Recent Readings
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Soil Moisture</th>
+              <th>Temperature</th>
+              <th>Pump</th>
+            </tr>
+          </thead>
+          <tbody id="readings-body">
+            <tr><td colspan="4" class="empty-row">Awaiting data…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════ CONFIG MODAL (shown if credentials missing) ═══════════════ -->
+  <div class="modal-overlay" id="config-modal">
+    <div class="modal">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </div>
+      <h2>Connect to Supabase</h2>
+      <p>Enter your Supabase project credentials to stream live sensor data.</p>
+      <div class="form-group">
+        <label>Project URL</label>
+        <input type="text" id="cfg-url" placeholder="https://xxxx.supabase.co" />
+      </div>
+      <div class="form-group">
+        <label>Anon Key</label>
+        <input type="text" id="cfg-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5c..." />
+      </div>
+      <div class="form-group">
+        <label>Table Name</label>
+        <input type="text" id="cfg-table" placeholder="garden_data" value="garden_data" />
+      </div>
+      <button class="modal-btn" id="cfg-save">Connect</button>
+      <button class="modal-btn secondary" id="cfg-demo">Use Demo Data</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

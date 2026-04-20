@@ -1,0 +1,27 @@
+=========================================
+GARDEN TRANSMITTER (ESP32) PIN CONNECTIONS
+=========================================
+
+1. SX1278 (Ra-02) LoRa Module
+-----------------------------------------
+ESP32 Pin     LoRa Pin    Notes
+-----------------------------------------
+3V3           VCC         Use 3.3V, NOT 5V!
+GND           GND         Ground
+18            SCK         SPI Clock
+19            MISO        SPI MISO
+23            MOSI        SPI MOSI
+15            NSS (CS)    Chip Select
+27            RST         Reset
+26            DIO0        Interrupt
+
+2. Sensors
+-----------------------------------------
+ESP32 Pin     Component             Notes
+-----------------------------------------
+34            Capacitive Soil AOUT  Analog read pin
+4             DS18B20 Temp Data     OneWire bus (Needs 4.7k resistor between Data and 3V3!)
+
+Important Notes:
+1. Both sensors should ideally be powered from 3.3V to ensure the data signals don't exceed the ESP32's 3.3V logic limit.
+2. The DS18B20 strictly requires a pull-up resistor (typically 4.7k ohm) connected between its Data pin and 3.3V power.

@@ -1,0 +1,35 @@
+=========================================
+GARDEN RECEIVER (WEMOS D1 MINI / ESP8266) PIN CONNECTIONS
+=========================================
+
+1. SX1278 (Ra-01) LoRa Module
+-----------------------------------------
+Wemos Pin     LoRa Pin    Notes
+-----------------------------------------
+3V3           VCC         Use 3.3V, NOT 5V!
+G                 GND         Ground
+D5 (GPIO14)       SCK         SPI Clock
+D6 (GPIO12)       MISO        SPI MISO
+D7 (GPIO13)       MOSI        SPI MOSI
+D8 (GPIO15)       NSS (CS)    Chip Select
+D0 (GPIO16)       RST         Reset
+D2 (GPIO4)        DIO0        Interrupt (essential)
+
+2. Outputs (Buzzer & Pump Relay)
+-----------------------------------------
+Wemos Pin     Component   Notes
+-----------------------------------------
+D1 (GPIO5)        Buzzer +    Active buzzer positive pin
+D3 (GPIO0)        Relay IN    Controls pump/solenoid
+G               Buzzer -    Buzzer ground
+G               Relay GND   Relay module ground
+5V              Relay VCC   Use 5V pin on Wemos for most relay boards
+-----------------------------------------
+
+Important Notes:
+1. Ensure your relay module triggers on HIGH logic (which is how the code is written).
+   If it triggers on LOW, you will need to invert the logic in `digitalWrite(RELAY_PIN, relayActive ? LOW : HIGH);`
+2. The relay should switch the HOT wire of your actual water pump power supply.
+3. LoRa requires exactly 3.3V. The relay usually requires 5V.
+4. When flashing the Wemos D1 Mini, make sure you select "LOLIN(WEMOS) D1 R2 & mini" or "Generic ESP8266 Module" in the Arduino IDE.
+
