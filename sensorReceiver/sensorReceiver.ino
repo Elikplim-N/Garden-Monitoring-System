@@ -1,7 +1,7 @@
 #include <SPI.h>
 #include <LoRa.h>
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
 #include <WiFiClientSecure.h>
 
 // ---------------- CONFIGURATION ----------------
@@ -13,16 +13,16 @@ const char* supabase_url = "https://your-project.supabase.co/rest/v1/garden_data
 const char* supabase_config_url = "https://your-project.supabase.co/rest/v1/garden_config?id=eq.1&select=pump_mode,manual_override,soil_threshold";
 const char* supabase_key = "YOUR_SUPABASE_ANON_KEY";
 
-// ---------------- PIN DEFINITIONS (Wemos D1 Mini) ----------------
-#define LORA_SCK       D5 // Hardware VSPI Clock (GPIO14)
-#define LORA_MISO      D6 // Hardware VSPI MISO  (GPIO12)
-#define LORA_MOSI      D7 // Hardware VSPI MOSI  (GPIO13)
-#define LORA_SS        D8 // Hardware VSPI SS    (GPIO15)
-#define LORA_RST       D0 // GPIO16
-#define LORA_DIO0      D2 // GPIO4
+// ---------------- PIN DEFINITIONS (ESP32) ----------------
+#define LORA_SCK       18 // Hardware VSPI Clock
+#define LORA_MISO      19 // Hardware VSPI MISO
+#define LORA_MOSI      23 // Hardware VSPI MOSI
+#define LORA_SS        15 // Hardware VSPI SS
+#define LORA_RST       27 // Reset
+#define LORA_DIO0      26 // DIO0
 
-#define BUZZER_PIN     D1 // Buzzer positive (GPIO5)
-#define RELAY_PIN      D3 // Controls pump / solenoid (GPIO0)
+#define BUZZER_PIN     21 // Buzzer positive (GPIO21)
+#define RELAY_PIN      22 // Controls pump / solenoid (GPIO22)
 
 // ---------------- LORA SETTINGS ----------------
 #define LORA_FREQ      433E6
