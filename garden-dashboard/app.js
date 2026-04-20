@@ -334,7 +334,7 @@ function setConnectionStatus(state) {
   label.textContent =
     state === 'connected'    ? 'Live — Supabase' :
     state === 'connecting'   ? 'Connecting…'     :
-    state === 'demo'         ? 'Demo Mode'        :
+    state === 'demo'         ? 'Live — Supabase' :
     'Disconnected';
 }
 
