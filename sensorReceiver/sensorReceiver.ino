@@ -21,8 +21,8 @@ const char* supabase_key = "YOUR_SUPABASE_ANON_KEY";
 #define LORA_RST       27 // Reset
 #define LORA_DIO0      26 // DIO0
 
-#define BUZZER_PIN     21 // Buzzer positive (GPIO21)
-#define RELAY_PIN      22 // Controls pump / solenoid (GPIO22)
+#define BUZZER_PIN     14 // Buzzer positive (GPIO14)
+#define RELAY_PIN      13 // Controls pump / solenoid (GPIO13)
 
 // ---------------- LORA SETTINGS ----------------
 #define LORA_FREQ      433E6
