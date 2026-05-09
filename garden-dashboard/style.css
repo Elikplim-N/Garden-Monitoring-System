@@ -36,7 +36,8 @@ html { font-size: 16px; }
 
 body {
   font-family: 'Inter', sans-serif;
-  background: var(--bg);
+  background: var(--bg) url('bg.png') no-repeat center center fixed;
+  background-size: cover;
   color: var(--text);
   min-height: 100vh;
   display: flex;
@@ -52,8 +53,10 @@ body {
 .sidebar {
   width: var(--sidebar-w);
   flex-shrink: 0;
-  background: var(--bg2);
-  border-right: 1px solid var(--border);
+  background: rgba(13, 26, 20, 0.55);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-right: 1px solid rgba(255,255,255,0.08);
   display: flex;
   flex-direction: column;
   padding: 24px 0;
@@ -232,13 +235,20 @@ body {
 
 /* ─────────────────── CARDS ─────────────────── */
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: rgba(13, 26, 20, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: var(--radius);
   padding: 22px;
-  transition: border-color var(--transition);
+  transition: border-color var(--transition), transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
-.card:hover { border-color: var(--border-hov); }
+.card:hover { 
+  border-color: var(--border-hov); 
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+}
 
 .card-label {
   display: flex;
@@ -562,13 +572,15 @@ tbody tr:hover td { background: var(--surface-hov); color: var(--text); }
 .modal { position: relative; z-index: 9001; pointer-events: all; }
 
 .modal {
-  background: var(--bg2);
-  border: 1px solid var(--border);
+  background: rgba(13, 26, 20, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.1);
   border-radius: var(--radius);
   padding: 36px 32px;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+  box-shadow: 0 24px 64px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.05);
   position: relative;
   z-index: 9001;
 }

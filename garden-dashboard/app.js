@@ -394,13 +394,39 @@ function bindUI() {
   document.getElementById('thresh-minus').addEventListener('click', () => updateThreshold(-5));
   document.getElementById('thresh-plus').addEventListener('click', () => updateThreshold(5));
 
-  // Nav highlighting (simple SPA stub)
+  // Nav highlighting and tab switching
   document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', (e) => {
       e.preventDefault();
+      
+      if (item.id === 'nav-settings') {
+        showModal();
+        return;
+      }
+
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
       item.classList.add('active');
-      if (item.id === 'nav-settings') showModal();
+
+      const secDashboard = document.getElementById('sec-dashboard');
+      const secHistory   = document.getElementById('sec-history');
+      const secTable     = document.getElementById('sec-table');
+      const secAlerts    = document.getElementById('sec-alerts');
+
+      if (secDashboard) secDashboard.style.display = 'none';
+      if (secHistory) secHistory.style.display = 'none';
+      if (secTable) secTable.style.display = 'none';
+      if (secAlerts) secAlerts.style.display = 'none';
+
+      if (item.id === 'nav-dashboard') {
+        if (secDashboard) secDashboard.style.display = 'grid';
+        if (secHistory) secHistory.style.display = 'block';
+        if (secTable) secTable.style.display = 'block';
+      } else if (item.id === 'nav-history') {
+        if (secHistory) secHistory.style.display = 'block';
+        if (secTable) secTable.style.display = 'block';
+      } else if (item.id === 'nav-alerts') {
+        if (secAlerts) secAlerts.style.display = 'block';
+      }
     });
   });
 }
